@@ -1,0 +1,22 @@
+sudo apt update
+sudo apt install openjdk-11-jdk -y # install Java
+java -version
+wget https://www.atlassian.com/software/jira/downloads/binary/atlassian-jira-software-9.10.0-x64.bin   # Download Jira
+chmod +x atlassian-jira-software-9.10.0-x64.bin # Install Jira
+sudo ./atlassian-jira-software-9.10.0-x64.bin
+sudo apt install postgresql postgresql-contrib -y # install Database
+sudo -i -u postgres  # create database
+psql
+CREATE DATABASE jiradb;   
+CREATE USER jirauser WITH PASSWORD 'yourpassword';
+ALTER ROLE jirauser SET client_encoding TO 'utf8';
+ALTER ROLE jirauser SET default_transaction_isolation TO 'read committed';
+ALTER ROLE jirauser SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE jiradb TO jirauser;
+\q
+exit
+sudo /etc/init.d/jira start
+http://your-server-ip:8080
+sudo /etc/init.d/jira start
+sudo /etc/init.d/jira stop
+sudo /etc/init.d/jira status
