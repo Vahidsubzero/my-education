@@ -1,0 +1,47 @@
+services:
+  nextcloud-db:
+    image: mariadb:10.5
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_PASSWORD: userpass
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+    volumes:
+      - db:/var/lib/mysql
+
+  nextcloud-app:
+    image: nextcloud
+    restart: unless-stopped
+    environment:
+      MYSQL_PASSWORD: userpass
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_HOST: nextcloud-db
+    volumes:
+      - nextcloud:/var/www/html
+    networks:
+      - proxy
+    expose:
+      - "80"
+
+  nginx-proxy:
+    image: jc21/nginx-proxy-manager:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81" # پنل مدیریت
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy
+
+networks:
+  proxy:
+
+volumes:
+  db:
+  nextcloud:
+
