@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: netbox
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: netboxpass
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./redis-data:/data
+    restart: always
+
+  netbox:
+    image: netboxcommunity/netbox:latest
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DB_HOST: postgres
+      DB_NAME: netbox
+      DB_USER: netbox
+      DB_PASSWORD: netboxpass
+      REDIS_HOST: redis
+      SECRET_KEY: 4R3q)=*+ArQa8O#D28Ny&bDgKDE59^Gg*SR=Y(g0Dq85CtfRvl
+    volumes:
+      - ./netbox-media:/opt/netbox/netbox/media
+      - ./netbox-reports:/opt/netbox/netbox/reports
+      - ./netbox-scripts:/opt/netbox/netbox/scripts
+    ports:
+      - "8000:8080"
+    restart: always
